@@ -1,8 +1,10 @@
+
+// 기본 설정
 const canvas = document.getElementById("mazeCanvas");
 const ctx = canvas.getContext("2d");
 const status = document.getElementById("gameStatus");
-const scoreDisplay = document.getElementById("scoreDisplay");
-const restartButton = document.getElementById("restartButton");
+const scoreDisplay = document.getElementById("scoreDisplay"); // 승패 표시 요소
+const restartButton = document.getElementById("restartButton"); // 다시하기 버튼
 const urlParams = new URLSearchParams(window.location.search);
 const difficulty = urlParams.get("difficulty");
 let mazeSize = difficulty === "easy" ? 10 : difficulty === "medium" ? 20 : 30;
@@ -17,14 +19,15 @@ let agents = [
 let optimalPath = new Set();
 let optimalPathCoords = [];
 let gameOver = false;
-let wins = 0;
-let losses = 0;
+let wins = 0; // 사용자 승리 횟수
+let losses = 0; // 사용자 패배 횟수
 
 const actions = ["up", "down", "left", "right"];
 let qTables = agents.map(() => Array(mazeSize).fill().map(() => Array(mazeSize).fill().map(() => actions.reduce((acc, a) => ({ ...acc, [a]: 0 }), {}))));
 let moveCache = {};
 const oppositeActions = { "up": "down", "down": "up", "left": "right", "right": "left" };
 
+// BFS로 최적 경로 계산
 function bfsShortestPath(maze, start, goal) {
     const queue = [{ x: start.x, y: start.y, path: [] }];
     const visited = new Set();
@@ -49,6 +52,7 @@ function bfsShortestPath(maze, start, goal) {
     return new Set();
 }
 
+// 미로 생성
 function generateMaze() {
     maze = Array(mazeSize).fill().map(() => Array(mazeSize).fill(1));
     const frontiers = [];
@@ -107,6 +111,7 @@ function precomputeMoves() {
     }
 }
 
+// 미로 그리기
 function drawMaze() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const userAgent = agents.find(a => a.isUser);
@@ -142,6 +147,7 @@ function drawMaze() {
     if (gameOver) visualizePaths();
 }
 
+// 경로 시각화
 function visualizePaths() {
     agents.forEach(agent => {
         ctx.strokeStyle = agent.color;
@@ -248,6 +254,7 @@ function moveUserAgent(action) {
     drawMaze();
 }
 
+// 키보드 입력 이벤트
 document.addEventListener("keydown", (event) => {
     event.preventDefault();
     switch (event.key) {
@@ -258,20 +265,23 @@ document.addEventListener("keydown", (event) => {
     }
 });
 
+// 게임 종료
 function endGame(message) {
     gameOver = true;
     status.textContent = message;
     drawMaze();
     
+    // 승패 기록 업데이트
     if (message.includes("사용자 승리")) {
         wins++;
     } else {
         losses++;
     }
     scoreDisplay.textContent = `승: ${wins} | 패: ${losses}`;
-    restartButton.style.display = "block";
+    restartButton.style.display = "block"; // 버튼 표시
 }
 
+// 게임 재시작
 function restartGame() {
     gameOver = false;
     agents = [
@@ -284,10 +294,11 @@ function restartGame() {
     optimalPath = new Set();
     optimalPathCoords = [];
     status.textContent = "대결 시작 중...";
-    restartButton.style.display = "none";
+    restartButton.style.display = "none"; // 버튼 숨김
     startGame();
 }
 
+// 다시하기 버튼 이벤트 (중첩 방지)
 restartButton.addEventListener("click", restartGame);
 
 function startGame() {
@@ -303,29 +314,26 @@ function startGame() {
         if (gameOver) return;
 
         renderCounter++;
-        // AI 이동 속도를 1/3으로 줄이기 위해 3프레임마다 한 번만 이동
-        if (renderCounter % 15 === 0) {
-            agents.forEach((agent, idx) => {
-                if (agent.finished || agent.isUser) return;
-                const state = { ...agent.pos };
-                const action = chooseAction(qTables[idx], state);
-                const nextState = getNextState(state, action);
-                const reward = getReward(agent, state, nextState, action, agent.prevAction);
+        agents.forEach((agent, idx) => {
+            if (agent.finished || agent.isUser) return;
+            const state = { ...agent.pos };
+            const action = chooseAction(qTables[idx], state);
+            const nextState = getNextState(state, action);
+            const reward = getReward(agent, state, nextState, action, agent.prevAction);
 
-                if (idx === 0) updateSARSA(idx, state, action, reward, nextState, chooseAction(qTables[idx], nextState));
-                else if (idx === 1) updateQLearning(idx, state, action, reward, nextState);
+            if (idx === 0) updateSARSA(idx, state, action, reward, nextState, chooseAction(qTables[idx], nextState));
+            else if (idx === 1) updateQLearning(idx, state, action, reward, nextState);
 
-                agent.pos = nextState;
-                agent.prevAction = action;
-                agent.path.push({ ...agent.pos });
-                agent.visited.add(`${agent.pos.y},${agent.pos.x}`);
+            agent.pos = nextState;
+            agent.prevAction = action;
+            agent.path.push({ ...agent.pos });
+            agent.visited.add(`${agent.pos.y},${agent.pos.x}`);
 
-                if (maze[agent.pos.y][agent.pos.x] === 2) {
-                    agent.finished = true;
-                    endGame(`${agent.name} 승리!`);
-                }
-            });
-        }
+            if (maze[agent.pos.y][agent.pos.x] === 2) {
+                agent.finished = true;
+                endGame(`${agent.name} 승리!`);
+            }
+        });
 
         drawMaze();
         if (!agents.every(a => a.finished)) requestAnimationFrame(gameLoop);
@@ -333,6 +341,7 @@ function startGame() {
     requestAnimationFrame(gameLoop);
 }
 
-scoreDisplay.textContent = `승: ${wins} | 패: ${losses}`;
-restartButton.style.display = "none";
+// 초기화 및 게임 시작
+scoreDisplay.textContent = `승: ${wins} | 패: ${losses}`; // 초기 승패 표시
+restartButton.style.display = "none"; // 처음엔 버튼 숨김
 startGame();
