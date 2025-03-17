@@ -304,7 +304,7 @@ function startGame() {
 
         renderCounter++;
         // AI 이동 속도를 1/3으로 줄이기 위해 3프레임마다 한 번만 이동
-        if (renderCounter % 30 === 0) {
+        if (renderCounter % 15 === 0) {
             agents.forEach((agent, idx) => {
                 if (agent.finished || agent.isUser) return;
                 const state = { ...agent.pos };
