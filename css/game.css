@@ -1,0 +1,28 @@
+body {
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+canvas {
+    border: 1px solid black;
+    margin: 20px auto;
+    display: block;
+}
+
+.status {
+    margin-top: 10px;
+    font-size: 1.2em;
+}
+
+.game-container {
+    padding: 40px 0;
+}
+
+.legend {
+    margin: 10px 0;
+}
+
+.legend span {
+    margin: 0 10px;
+    font-weight: bold;
+}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="AI와의 미로 대결">
+    <meta name="author" content="">
+    <title>AI Maze Challenge - Game</title>
+
+    <!-- CSS FILES -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Open+Sans&display=swap" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/templatemo-topic-listing.css" rel="stylesheet">
+    <link href="css/game.css" rel="stylesheet"> <!-- 별도 CSS 파일 추가 -->
+</head>
+<body id="top">
+    <main>
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="index.html">
+                    <i class="bi-back"></i>
+                    <span>AI Maze</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-lg-5 me-lg-auto">
+                        <li class="nav-item"><a class="nav-link click-scroll" href="index.html#section_1">Home</a></li>
+                        <li class="nav-item"><a class="nav-link click-scroll" href="index.html#section_2">Play Maze</a></li>
+                        <li class="nav-item"><a class="nav-link click-scroll" href="index.html#section_3">How AI Works</a></li>
+                        <li class="nav-item"><a class="nav-link click-scroll" href="index.html#section_4">FAQs</a></li>
+                        <li class="nav-item"><a class="nav-link click-scroll" href="index.html#section_5">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <section class="game-container section-padding" id="game-section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <h2 class="mb-4">AI 강화학습 대결</h2>
+                        <p>TD-SARSA, TD-Q-Learning이 미로를 탐색합니다! (사용자는 방향키로 제어)</p>
+                        <div class="legend">
+                            <span style="color: blue;">SARSA: 파랑</span>
+                            <span style="color: green;">Q-Learning: 초록</span>
+                            <span style="color: red;">사용자: 빨강</span>
+                        </div>
+                        <canvas id="mazeCanvas" width="500" height="500"></canvas>
+                        <p class="status" id="gameStatus">대결 시작 중...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer section-padding">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-12 mb-4 pb-2">
+                    <a class="navbar-brand mb-2" href="index.html">
+                        <i class="bi-back"></i>
+                        <span>AI Maze</span>
+                    </a>
+                </div>
+                <div class="col-lg-3 col-md-4 col-12 mt-4 mt-lg-0 ms-auto">
+                    <p class="copyright-text">Copyright © 2025 AI Maze Challenge. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT FILES -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/jquery.sticky.js"></script>
+    <script src="js/custom.js"></script>
+    <script src="js/game.js"></script> <!-- 별도 JS 파일 추가 -->
+</body>
+</html>
