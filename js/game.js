@@ -2,6 +2,8 @@
 const canvas = document.getElementById("mazeCanvas");
 const ctx = canvas.getContext("2d");
 const status = document.getElementById("gameStatus");
+const scoreDisplay = document.getElementById("scoreDisplay"); // 승패 표시 요소
+const restartButton = document.getElementById("restartButton"); // 다시하기 버튼
 const urlParams = new URLSearchParams(window.location.search);
 const difficulty = urlParams.get("difficulty");
 let mazeSize = difficulty === "easy" ? 10 : difficulty === "medium" ? 20 : 30;
@@ -16,6 +18,8 @@ let agents = [
 let optimalPath = new Set();
 let optimalPathCoords = [];
 let gameOver = false;
+let wins = 0; // 사용자 승리 횟수
+let losses = 0; // 사용자 패배 횟수
 
 const actions = ["up", "down", "left", "right"];
 let qTables = agents.map(() => Array(mazeSize).fill().map(() => Array(mazeSize).fill().map(() => actions.reduce((acc, a) => ({ ...acc, [a]: 0 }), {}))));
@@ -106,7 +110,7 @@ function precomputeMoves() {
     }
 }
 
-// 미로 그리기 (게임 종료 시 전체 공개)
+// 미로 그리기
 function drawMaze() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const userAgent = agents.find(a => a.isUser);
@@ -115,19 +119,17 @@ function drawMaze() {
     for (let y = 0; y < mazeSize; y++) {
         for (let x = 0; x < mazeSize; x++) {
             if (gameOver) {
-                // 게임 종료 시 전체 맵 공개
-                if (maze[y][x] === 1) ctx.fillStyle = "#333"; // 벽
-                else if (maze[y][x] === 2) ctx.fillStyle = "yellow"; // 목표
-                else ctx.fillStyle = "#fff"; // 통로
+                if (maze[y][x] === 1) ctx.fillStyle = "#333";
+                else if (maze[y][x] === 2) ctx.fillStyle = "yellow";
+                else ctx.fillStyle = "#fff";
             } else {
-                // 게임 중: 사용자 주변 1칸만 표시
                 const dist = Math.abs(x - ux) + Math.abs(y - uy);
                 if (dist <= 1 || (x === goal.x && y === goal.y)) {
-                    if (maze[y][x] === 1) ctx.fillStyle = "#333"; // 벽
-                    else if (maze[y][x] === 2) ctx.fillStyle = "yellow"; // 목표
-                    else ctx.fillStyle = "#fff"; // 통로
+                    if (maze[y][x] === 1) ctx.fillStyle = "#333";
+                    else if (maze[y][x] === 2) ctx.fillStyle = "yellow";
+                    else ctx.fillStyle = "#fff";
                 } else {
-                    ctx.fillStyle = "#000"; // 안개
+                    ctx.fillStyle = "#000";
                 }
             }
             ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
@@ -135,13 +137,13 @@ function drawMaze() {
     }
 
     agents.forEach(agent => {
-        if (!agent.finished || gameOver) { // 게임 종료 시 모든 에이전트 표시
+        if (!agent.finished || gameOver) {
             ctx.fillStyle = agent.color;
             ctx.fillRect(agent.pos.x * cellSize + cellSize / 4, agent.pos.y * cellSize + cellSize / 4, cellSize / 2, cellSize / 2);
         }
     });
 
-    if (gameOver) visualizePaths(); // 게임 종료 시 경로 시각화
+    if (gameOver) visualizePaths();
 }
 
 // 경로 시각화
@@ -251,6 +253,7 @@ function moveUserAgent(action) {
     drawMaze();
 }
 
+// 키보드 입력 이벤트
 document.addEventListener("keydown", (event) => {
     event.preventDefault();
     switch (event.key) {
@@ -261,19 +264,20 @@ document.addEventListener("keydown", (event) => {
     }
 });
 
-// 게임 종료 및 다시하기 버튼 추가
+// 게임 종료
 function endGame(message) {
     gameOver = true;
     status.textContent = message;
-    drawMaze(); // 전체 맵 공개 및 경로 시각화
-
-    const restartButton = document.createElement("button");
-    restartButton.textContent = "다시하기";
-    restartButton.style.marginTop = "10px";
-    restartButton.style.padding = "10px 20px";
-    restartButton.style.fontSize = "1.2em";
-    restartButton.onclick = restartGame;
-    document.querySelector(".col-12.text-center").appendChild(restartButton);
+    drawMaze();
+    
+    // 승패 기록 업데이트
+    if (message.includes("사용자 승리")) {
+        wins++;
+    } else {
+        losses++;
+    }
+    scoreDisplay.textContent = `승: ${wins} | 패: ${losses}`;
+    restartButton.style.display = "block"; // 버튼 표시
 }
 
 // 게임 재시작
@@ -289,10 +293,12 @@ function restartGame() {
     optimalPath = new Set();
     optimalPathCoords = [];
     status.textContent = "대결 시작 중...";
-    const restartButton = document.querySelector("button");
-    if (restartButton) restartButton.remove();
+    restartButton.style.display = "none"; // 버튼 숨김
     startGame();
 }
+
+// 다시하기 버튼 이벤트 (중첩 방지)
+restartButton.addEventListener("click", restartGame);
 
 function startGame() {
     generateMaze();
@@ -334,4 +340,7 @@ function startGame() {
     requestAnimationFrame(gameLoop);
 }
 
+// 초기화 및 게임 시작
+scoreDisplay.textContent = `승: ${wins} | 패: ${losses}`; // 초기 승패 표시
+restartButton.style.display = "none"; // 처음엔 버튼 숨김
 startGame();
