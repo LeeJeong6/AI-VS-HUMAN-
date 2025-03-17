@@ -30,10 +30,7 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-lg-5 me-lg-auto">
                         <li class="nav-item"><a class="nav-link click-scroll" href="index.html#section_1">Home</a></li>
-                        <li class="nav-item"><a class="nav-link click-scroll" href="index.html#section_2">Play Maze</a></li>
-                        <li class="nav-item"><a class="nav-link click-scroll" href="index.html#section_3">How AI Works</a></li>
-                        <li class="nav-item"><a class="nav-link click-scroll" href="index.html#section_4">FAQs</a></li>
-                        <li class="nav-item"><a class="nav-link click-scroll" href="index.html#section_5">Contact</a></li>
+                        
                     </ul>
                 </div>
             </div>
@@ -52,6 +49,8 @@
                         </div>
                         <canvas id="mazeCanvas" width="500" height="500"></canvas>
                         <p class="status" id="gameStatus">대결 시작 중...</p>
+                        <p id="scoreDisplay">승: 0 | 패: 0</p>
+                        <button id="restartButton" class="btn custom-btn mt-2" style="display: none;">다시하기</button>
                     </div>
                 </div>
             </div>
